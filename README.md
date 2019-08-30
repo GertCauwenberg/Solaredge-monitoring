@@ -12,3 +12,14 @@ Setup is quite simple:
 - add a line in your crontab file, I'm using
     "*/5 5-21 * * *  YOURPATH/fetch.py 1>>YOURLOGPATH/`/bin/date +\%Y\%m\%d`.log  2>&1
 - wait and look at the data pouring in :-)
+
+In order to be able to upload data to PVOutput, you'll have some more work to do:
+- fill the layout table manually, e.g.
+     INSERT INTO layout ( serial, pvo_systemid ) VALUES ('<yourserial>', <your pvo systemid>);
+  for EACH panel that you have
+- fill the live_update table manually for each systemid in PVOutput, e.g.
+     INSERT INTO live_update(pvo_systemid) VALUES (<your pvo systemid>);
+- fill in the configuration in upload.py
+- add a second row in your crontab file, something like
+    "*/5 5-21 * * *  YOURPATH/upload.py 1>>YOURLOGPATH/`/bin/date +\%Y\%m\%d`.log  2>&1
+- Look at those nice graphs appearing on PVOutput

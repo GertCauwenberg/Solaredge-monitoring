@@ -27,3 +27,7 @@ CREATE TABLE IF NOT EXISTS layout(
     orientation  SMALLINT        DEFAULT 0,
     inclination  SMALLINT        DEFAULT 0,
     PRIMARY KEY (serial));
+
+CREATE TABLE IF NOT EXISTS live_update(
+    pvo_systemid  INTEGER        NOT NULL,
+    pvo_last_live TIMESTAMP      DEFAULT 0);
