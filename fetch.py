@@ -68,6 +68,8 @@ def get_energy_delta(dbh, inv):
     try:
         cursor.execute(sql)
         (E_day_prev, updated) = cursor.fetchone()
+    except TypeError: # When database is empty
+        return inv['e_day']
     except mdb.MySQLError as e:
         print("Error selecting last inverter data: {0}".format(e))
         sys.exit(1)
@@ -144,6 +146,8 @@ def save_data(dbh, inv, optimizers, now):
         opt = optimizers[key]
         try:
             cursor.execute(sql2, (now, opt['serial'], opt['timestamp'], opt['u_out']*inv['i_dc'], opt['u_out'], opt['u_in'], opt['e_day'], opt['e_total'], opt['temp']))
+        except KeyError: # When database empty
+            cursor.execute(sql2, (now, opt['serial'], opt['timestamp'], opt['u_out']*inv['i_dc'], opt['u_out'], opt['u_in'], 0, 0, opt['temp']))
         except mdb.MySQLError as e:
             code, msg = e.args
             print("Error inserting optimizer data: code {0}, msg {1}".format(code, msg))
