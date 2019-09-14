@@ -66,8 +66,8 @@ def get_energy_delta(dbh, inv):
               LIMIT 1"""
     cursor = dbh.cursor()
     try:
-         cursor.execute(sql)
-         (E_day_prev, updated) = cursor.fetchone()
+        cursor.execute(sql)
+        (E_day_prev, updated) = cursor.fetchone()
     except mdb.MySQLError as e:
         print("Error selecting last inverter data: {0}".format(e))
         sys.exit(1)
@@ -115,7 +115,7 @@ def calculate_energy(dbh, inv, optimizers):
         (serial, updated, u_out, e_day, e_total) = row
         try:
             opt = optimizers[str(serial)]
-            opt_delta = opt['u_out'] / U_total* E_delta
+            opt_delta = opt['u_out'] / U_total * E_delta
             opt['e_total'] = e_total + opt_delta
 
             if updated.date() == date.today():
@@ -143,7 +143,7 @@ def save_data(dbh, inv, optimizers, now):
     for key in optimizers:
         opt = optimizers[key]
         try:
-            cursor.execute(sql2, (now, opt['serial'], opt['timestamp'], opt['u_out']*inv['i_dc'], opt['u_out'], opt['u_in'], opt['e_day'], opt['e_total'],opt['temp'])) 
+            cursor.execute(sql2, (now, opt['serial'], opt['timestamp'], opt['u_out']*inv['i_dc'], opt['u_out'], opt['u_in'], opt['e_day'], opt['e_total'], opt['temp']))
         except mdb.MySQLError as e:
             code, msg = e.args
             print("Error inserting optimizer data: code {0}, msg {1}".format(code, msg))
