@@ -3,13 +3,8 @@ from solaredge_local import SolarEdge
 import MySQLdb as mdb
 from datetime import date, datetime
 import sys
-
-try:
-    from config import dbhost, dbuser, dbpassword, dbname, inverter
-except ModuleNotFoundError:
-    print("Please copy config-sample.py to config.py")
-    print("and fill in the correct values for your environment")
-    sys.exit(1)
+import common
+from config import inverter
 
 # Read inverter data
 def read_inverter(client):
@@ -55,14 +50,6 @@ def connect_inverter():
         return SolarEdge("http://{0}".format(inverter))
     except TimeoutError:
         print("Can't connect to inverter - check network settings\n")
-        sys.exit(1)
-
-
-def connect_database():
-    try:
-        return mdb.connect(dbhost, dbuser, dbpassword, dbname)
-    except mdb.MySQLError:
-        print("Can't connect to database - check database settings\n")
         sys.exit(1)
 
 
@@ -210,7 +197,7 @@ client = connect_inverter()
 inverter_data = read_inverter(client)
 optimizer_data = read_optimizers(client)
 if inverter_data["power"] > 0:
-    db = connect_database()
+    db = common.connect_database()
     calculate_energy(db, inverter_data, optimizer_data)
     save_data(db, inverter_data, optimizer_data, now)
     db.close()

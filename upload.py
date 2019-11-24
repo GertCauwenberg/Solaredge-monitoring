@@ -3,21 +3,8 @@ import MySQLdb as mdb
 from datetime import date, datetime
 import requests
 import sys
-
-try:
-    from config import dbhost, dbuser, dbpassword, dbname, pvoutput_api
-except ModuleNotFoundError:
-    print("Please copy config-sample.py to config.py")
-    print("and fill in the correct values for your environment")
-    sys.exit(1)
-
-
-def connect_database():
-    try:
-        return mdb.connect(dbhost, dbuser, dbpassword, dbname)
-    except mdb.MySQLError:
-        print("Can't connect to database - check database settings\n")
-        sys.exit(1)
+import common
+from config import pvoutput_api
 
 
 def get_systems(dbh):
@@ -110,7 +97,7 @@ def pvoutput_update(system, output):
 
 now = datetime.now()
 print("Running at {0}".format(now))
-db = connect_database()
+db = common.connect_database()
 systems = get_systems(db)
 for system in systems:
     data = get_last_output_data(db, system)
