@@ -30,4 +30,4 @@ CREATE TABLE IF NOT EXISTS layout(
 
 CREATE TABLE IF NOT EXISTS live_update(
     pvo_systemid  INTEGER        NOT NULL,
-    pvo_last_live TIMESTAMP      DEFAULT 0);
+    pvo_last_live TIMESTAMP      DEFAULT '1980-1-1');
