@@ -33,6 +33,9 @@ def get_systems(dbh):
     try:
         cursor.execute(sql)
         result = cursor.fetchall()
+        if not result:
+            init_layout_tables(dbh)
+            result = get_systems(dbh)  # Try one more time
     except mdb.MySQLError as e:
         print("Error selecting output data: {0}".format(e))
         sys.exit(1)
@@ -112,6 +115,97 @@ def pvoutput_update(system, output):
         return False
 
     return True
+
+
+def get_input(question, default, index):
+    answer = input(question + " (default {0})? ".format(default[index]))
+    if answer:
+        try:
+            answer = int(answer)
+            default[index] = answer
+        except ValueError:
+            print("Please give me an integer")
+            get_input(question, default, index)
+    return default[index]
+
+
+def add_panel(dbh, panel, default):
+    print("We found a new panel with serial {0}".format(panel))
+    print("Please answer a few questions about this panel")
+    correct = ""
+    while correct != "y":
+        correct = ""
+        sysid = get_input("What is the PVOutput System Id", default, 0)
+        orientation = get_input(
+            "What is the orientation (0 = North, 180 = South)", default, 1
+        )
+        inclination = get_input(
+            "What is the inclination (0 = Flat, 90 = Vertical)", default, 2
+        )
+        print("We recorded these settings:")
+        print("Panel serial:       {0}".format(panel))
+        print("PVOutput System Id: {0}".format(sysid))
+        print("Orientation:        {0}".format(orientation))
+        print("Inclination:        {0}".format(inclination))
+        while (correct != "y") and (correct != "n"):
+            correct = input("Is this correct (Y/N)? ").lower()
+            if correct:
+                correct = correct[0]
+
+    cursor = dbh.cursor()
+    sql = """INSERT INTO layout
+             (serial, pvo_systemid, orientation, inclination)
+             VALUES (%s, %s, %s, %s)"""
+    try:
+        cursor.execute(sql, (panel, sysid, orientation, inclination))
+    except mdb.MySQLError as e:
+        print("Error inserting layout data: {0}".format(e))
+
+
+def check_panel(dbh, panel, default):
+    cursor = dbh.cursor()
+    sql = """SELECT serial, pvo_systemid
+             FROM layout WHERE serial = %s"""
+    try:
+        cursor.execute(sql, (panel,))
+        if not cursor.rowcount:
+            add_panel(dbh, panel, default)
+            id = default[0]
+        else:
+            row = cursor.fetchone()
+            id = row[1]
+    except mdb.MySQLError as e:
+        print("Error selecting serial {1}: {0}".format(e, panel))
+        sys.exit(1)
+
+    sql = """SELECT pvo_systemid
+             FROM live_update WHERE pvo_systemid = %s"""
+    try:
+        cursor.execute(sql, (id,))
+        if not cursor.rowcount:
+            cursor.execute("INSERT INTO live_update (pvo_systemid) VALUES (%s)", (id,))
+    except mdb.MySQLError as e:
+        print("Error inserting systemid {1}: {0}".format(e, id))
+        sys.exit(1)
+
+
+def init_layout_tables(dbh):
+    sql = """SELECT distinct(serial) from optimizer"""
+    cursor = dbh.cursor()
+    try:
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        if not rows:
+            print("Run first fetch.py, then try this script again")
+            sys.exit(1)
+        default = [0, 0, 0]
+        for row in rows:
+            check_panel(dbh, row[0], default)
+    except mdb.MySQLError as e:
+        print("Error selecting serials: {0}".format(e))
+        sys.exit(1)
+
+    dbh.commit()
 
 
 now = datetime.now()
