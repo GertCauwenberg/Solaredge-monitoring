@@ -4,12 +4,12 @@ from datetime import date, datetime
 import requests
 import sys
 
-dbhost = "localhost"
-dbuser = "<TO BE SET>"
-dbpassword = "<TO BE SET>"
-dbname = "<TO BE SET>"
-
-pvoutput_api = "<TO BE SET>"
+try:
+    from config import dbhost, dbuser, dbpassword, dbname, pvoutput_api
+except ModuleNotFoundError:
+    print("Please copy config-sample.py to config.py")
+    print("and fill in the correct values for your environment")
+    sys.exit(1)
 
 
 def connect_database():

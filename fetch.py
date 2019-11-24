@@ -4,11 +4,12 @@ import MySQLdb as mdb
 from datetime import date, datetime
 import sys
 
-dbhost = "<TO BE SET>"
-dbuser = "<TO BE SET>"
-dbpassword = "<TO BE SET>"
-dbname = "<TO BE SET>"
-inverter = "<TO BE SET>"
+try:
+    from config import dbhost, dbuser, dbpassword, dbname, inverter
+except ModuleNotFoundError:
+    print("Please copy config-sample.py to config.py")
+    print("and fill in the correct values for your environment")
+    sys.exit(1)
 
 # Read inverter data
 def read_inverter(client):
