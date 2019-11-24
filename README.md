@@ -5,9 +5,21 @@ This project builds on solaredge-local (https://github.com/drobtravels/solaredge
 
 The purpose of the project is to interrogate your inverter and optimizers regularly, aproximate the data that the solaredge-local library does not provide, save it to a local database, and upload the data to a site such as pvoutput.org. Sounds simple enough, and there is more than one way to do this. However, one of the advantages of a power optimizer is that you can have multiple panel orientations in one string. And in that case, you might want, just like me, to see the generated power for each orientation separately. This is where this script shines - if you want, you can upload every panel to a different system on PVOutput, or make any combination you want.
 
+Prerequisites:
+- install pip, mariadb and python3-mysqldb
+    On Ubuntu, Debian, Rasberry Pi and similar this would be a command like
+    sudo apt install python3-pip mariadb-server python3-mysqldb
+
+- install solaredge-local:
+    sudo pip3 install solaredge-local
+
 Setup is quite simple:
 - create a database
+    mysql -e 'create database [dbname]'
+- grant permissions
+    mysql -e 'grant all on [dbname].* to '[dbuser']@'localhost' identified by '[dbpasswd]'
 - create the tables with the database.sql script
+    mysql -u [dbuser] -p [dbname] < database.sql
 - copy the file config-sample.py to config.py
 - fill in the configuration in config.py
 - add a line in your crontab file, I'm using
