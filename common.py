@@ -16,6 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import MySQLdb as mdb
+import sys
 
 try:
     from config import dbhost, dbuser, dbpassword, dbname
