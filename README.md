@@ -1,6 +1,10 @@
 # Solaredge-monitoring
 A project to monitor your new Solaredge inverter
 
+**Warning**
+
+Recent firmware versions disable local access.  Some units may continue to work, but many users are reporting it is no longer available.  See [this issue](https://github.com/jbuehl/solaredge/issues/124) and [this issue](https://github.com/drobtravels/solaredge-local/issues/24) for additional details.  Please check if you can access your inverter via a web browser before attempting to use this library.
+
 This project builds on solaredge-local (https://github.com/drobtravels/solaredge-local), and therefore will only work for inverters supported by that project. As a reminder, "The local API is available on the SExxxxH-US models with SetApp as well as European three phase inverters SEXXK-XXXTXBXX4 models with SetApp like SE3K-E10K, SE12.5K-SE27.6K and SE33.3K". Basically, if your Solaredge inverter does NOT have a display, you're probably good for the solaredge-local library. Moreover, this project currently focuses on single-phase inverters.
 
 The purpose of the project is to interrogate your inverter and optimizers regularly, aproximate the data that the solaredge-local library does not provide, save it to a local database, and upload the data to a site such as pvoutput.org. Sounds simple enough, and there is more than one way to do this. However, one of the advantages of a power optimizer is that you can have multiple panel orientations in one string. And in that case, you might want, just like me, to see the generated power for each orientation separately. This is where this script shines - if you want, you can upload every panel to a different system on PVOutput, or make any combination you want.
